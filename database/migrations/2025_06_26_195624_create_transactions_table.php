@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('employee_id');
             $table->foreignId('machine_id');
             $table->foreignId('slot_id');
+            $table->foreignId('product_id');
             $table->integer('points_deducted');
             $table->timestamp('transaction_time');
             $table->enum('status', ['success', 'failure']);
