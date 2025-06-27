@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id('employee_id');
             $table->string('name');
-            $table->string('card_number');
+            $table->foreignId('card_id')
+                ->nullable()
+                ->constrained('cards', 'card_id')
+                ->onDelete('set null');
             $table->foreignId('classification_id')
                 ->constrained('classifications', 'classification_id')
                 ->onDelete('restrict');
