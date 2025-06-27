@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MachineStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,7 +21,7 @@ class Machine extends Model
     ];
 
     protected $casts = [
-        'status' => 'string',
+        'status' => MachineStatus::class,
     ];
 
     public function transactions(): HasMany

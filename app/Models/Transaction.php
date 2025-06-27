@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TransactionStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +27,7 @@ class Transaction extends Model
 
     protected $casts = [
         'transaction_time' => 'datetime',
-        'status' => 'string',
+        'status' => TransactionStatus::class,
     ];
 
     // Relationships
