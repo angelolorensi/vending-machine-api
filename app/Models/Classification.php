@@ -13,6 +13,15 @@ class Classification extends Model
     protected $table = 'classifications';
     protected $primaryKey = 'classification_id';
 
+    protected $fillable = [
+        'name',
+        'daily_juice_limit',
+        'daily_meal_limit',
+        'daily_snack_limit',
+        'daily_point_limit'
+    ];
+
+
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class, 'classification_id');

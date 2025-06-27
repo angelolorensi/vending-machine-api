@@ -13,6 +13,16 @@ class Machine extends Model
     protected $table = 'machines';
     protected $primaryKey = 'machine_id';
 
+    protected $fillable = [
+        'location',
+        'name',
+        'status'
+    ];
+
+    protected $casts = [
+        'status' => 'string',
+    ];
+
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'machine_id');

@@ -13,6 +13,22 @@ class Transaction extends Model
     protected $primaryKey = 'transaction_id';
     protected $table = 'transactions';
 
+    protected $fillable = [
+        'employee_id',
+        'machine_id',
+        'slot_id',
+        'product_id',
+        'points_deducted',
+        'transaction_time',
+        'status',
+        'failure_reason'
+    ];
+
+    protected $casts = [
+        'transaction_time' => 'datetime',
+        'status' => 'string',
+    ];
+
     // Relationships
     public function employee(): BelongsTo
     {

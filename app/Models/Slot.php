@@ -14,6 +14,11 @@ class Slot extends Model
     protected $table = 'slots';
     protected $primaryKey = 'slot_id';
 
+    protected $fillable = [
+        'machine_id',
+        'product_id'
+    ];
+
     public function machine(): BelongsTo
     {
         return $this->belongsTo(Machine::class, 'machine_id');

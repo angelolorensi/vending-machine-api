@@ -14,6 +14,17 @@ class Employee extends Model
     protected $table = 'employees';
     protected $primaryKey = 'employee_id';
 
+    protected $fillable = [
+        'name',
+        'card_number',
+        'classification_id',
+        'status'
+    ];
+
+    protected $casts = [
+        'status' => 'string',
+    ];
+
     public function classification(): BelongsTo
     {
         return $this->belongsTo(Classification::class, 'classification_id');
