@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id('employee_id');
             $table->string('name');
             $table->string('card_number');
-            $table->foreignId('classification_id');
+            $table->foreignId('classification_id')
+                ->constrained('classifications', 'classification_id')
+                ->onDelete('restrict');
             $table->enum('status', ['active', 'inactive']);
             $table->timestamps();
         });

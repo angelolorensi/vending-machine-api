@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('slots', function (Blueprint $table) {
             $table->id('slot_id');
-            $table->foreignId('machine_id');
-            $table->foreignId('product_id');
+            $table->foreignId('machine_id')
+                ->constrained('machines', 'machine_id')
+                ->onDelete('cascade');
+            $table->foreignId('product_id')
+                ->constrained('products', 'product_id')
+                ->onDelete('restrict');
             $table->timestamps();
         });
     }

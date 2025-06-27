@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->integer('price_points');
-            $table->foreignId('product_category_id');
+            $table->foreignId('product_category_id')
+                ->constrained('product_categories', 'product_category_id')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

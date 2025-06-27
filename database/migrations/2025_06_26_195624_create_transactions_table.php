@@ -13,10 +13,18 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id('transaction_id');
-            $table->foreignId('employee_id');
-            $table->foreignId('machine_id');
-            $table->foreignId('slot_id');
-            $table->foreignId('product_id');
+            $table->foreignId('employee_id')
+                ->constrained('employees', 'employee_id')
+                ->onDelete('restrict');
+            $table->foreignId('machine_id')
+                ->constrained('machines', 'machine_id')
+                ->onDelete('restrict');
+            $table->foreignId('slot_id')
+                ->constrained('slots', 'slot_id')
+                ->onDelete('restrict');
+            $table->foreignId('product_id')
+                ->constrained('products', 'product_id')
+                ->onDelete('restrict');
             $table->integer('points_deducted');
             $table->timestamp('transaction_time');
             $table->enum('status', ['success', 'failure']);
