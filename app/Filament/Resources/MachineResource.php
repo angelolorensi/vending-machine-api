@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\MachineStatus;
 use App\Filament\Resources\MachineResource\Pages;
 use App\Filament\Resources\MachineResource\RelationManagers;
 use App\Models\Machine;
@@ -10,8 +11,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class MachineResource extends Resource
 {
@@ -23,15 +22,15 @@ class MachineResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('location')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\TextInput::make('location')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('status')
+                    ->options(MachineStatus::class)
+                    ->required(),
             ]);
     }
 
@@ -39,12 +38,16 @@ class MachineResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('location')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('location')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->searchable()
+                    ->icon(fn($record) => $record->status === MachineStatus::ACTIVE
+                        ? 'heroicon-o-check-circle'
+                        : 'heroicon-o-x-circle'
+                    ),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
