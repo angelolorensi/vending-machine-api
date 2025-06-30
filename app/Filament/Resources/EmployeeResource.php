@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\EmployeeStatus;
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Models\Employee;
@@ -26,15 +27,42 @@ class EmployeeResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('card_number')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Select::make('card_id')
+                    ->relationship('card', 'card_number', function ($query, $record) {
+                        return $query->where('status', 'active')
+                            ->whereDoesntHave('employee', function ($subQuery) use ($record) {
+                                if ($record) {
+                                    $subQuery->where('employee_id', '!=', $record->employee_id);
+                                }
+                            })
+                            ->orderBy('card_number');
+                    })
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('card_number')
+                            ->required()
+                            ->maxLength(255)
+                            ->label('Número do Cartão'),
+                        Forms\Components\TextInput::make('points_balance')
+                            ->numeric()
+                            ->default(0)
+                            ->label('Saldo de Pontos'),
+                        Forms\Components\Select::make('status')
+                            ->options([
+                                'active' => 'Ativo',
+                                'inactive' => 'Inativo',
+                            ])
+                            ->default('active')
+                            ->label('Status'),
+                    ])
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\Select::make('classification_id')
                     ->relationship('classification', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('status')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Select::make('status')
+                    ->options(EmployeeStatus::class)
+                    ->required(),
             ]);
     }
 
@@ -43,13 +71,17 @@ class EmployeeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nome')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('card_number')
+                Tables\Columns\TextColumn::make('card.card_number')
+                    ->label('Número do Cartão')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('classification.name')
+                    ->label('Cargo')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
