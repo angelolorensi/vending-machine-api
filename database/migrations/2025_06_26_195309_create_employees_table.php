@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('card_id')
                 ->nullable()
+                ->unique()
                 ->constrained('cards', 'card_id')
                 ->onDelete('set null');
             $table->foreignId('classification_id')
