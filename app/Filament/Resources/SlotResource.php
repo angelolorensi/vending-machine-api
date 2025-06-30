@@ -92,7 +92,7 @@ class SlotResource extends Resource
     {
         return [
             'index' => Pages\ListSlots::route('/'),
-            'create' => Pages\CreateSlot::route('/create'),
+            //'create' => Pages\CreateSlot::route('/create'),
             'edit' => Pages\EditSlot::route('/{record}/edit'),
         ];
     }
