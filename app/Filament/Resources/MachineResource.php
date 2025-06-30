@@ -16,6 +16,8 @@ class MachineResource extends Resource
 {
     protected static ?string $model = Machine::class;
 
+    protected static ?string $modelLabel = 'Máquina';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -23,12 +25,15 @@ class MachineResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nome')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('location')
+                    ->label('Localização')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('status')
+                    ->label('Status')
                     ->options(MachineStatus::class)
                     ->required(),
             ]);
@@ -39,20 +44,25 @@ class MachineResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nome da Máquina')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('location')
+                    ->label('Localização')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->searchable()
                     ->icon(fn($record) => $record->status === MachineStatus::ACTIVE
                         ? 'heroicon-o-check-circle'
                         : 'heroicon-o-x-circle'
                     ),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Criado em')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Atualizado em')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -73,7 +83,7 @@ class MachineResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\SlotsRelationManager::class,
         ];
     }
 

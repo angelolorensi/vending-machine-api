@@ -17,18 +17,28 @@ class SlotResource extends Resource
 {
     protected static ?string $model = Slot::class;
 
+    protected static ?string $modelLabel = 'Slot';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('number')
+                    ->label('Número do Slot')
                     ->numeric(),
                 Forms\Components\Select::make('machine_id')
+                    ->label('Máquina')
                     ->relationship('machine', 'name')
                     ->required(),
                 Forms\Components\Select::make('product_id')
+                    ->label('Produto')
                     ->relationship('product', 'name'),
             ]);
     }
@@ -38,16 +48,22 @@ class SlotResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('machine.name')
+                    ->label('Máquina')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('product.name')
+                    ->label('Produto')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Criado em')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Atualizado em')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
