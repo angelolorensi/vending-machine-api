@@ -17,6 +17,8 @@ class ClassificationResource extends Resource
 {
     protected static ?string $model = Classification::class;
 
+    protected static ?string $modelLabel = 'Cargo';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -24,18 +26,23 @@ class ClassificationResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nome do cargo')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('daily_juice_limit')
+                    ->label('Limite diário de sucos')
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('daily_meal_limit')
+                    ->label('Limite diário de refeições')
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('daily_snack_limit')
+                    ->label('Limite diário de lanches')
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('daily_point_limit')
+                    ->label('Limite diário de pontos')
                     ->required()
                     ->numeric(),
             ]);
@@ -46,17 +53,22 @@ class ClassificationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nome do cargo')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('daily_juice_limit')
+                    ->label('Limite diário de sucos')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('daily_meal_limit')
+                    ->label('Limite diário de refeições')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('daily_snack_limit')
+                    ->label('Limite diário de lanches')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('daily_point_limit')
+                    ->label('Limite diário de pontos')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
