@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\EmployeeStatus;
+use App\Models\Card;
 use App\Models\Classification;
 use App\Models\Employee;
 use Illuminate\Database\Seeder;
@@ -14,6 +15,8 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
+        $cards = Card::all();
+
         $classifications = Classification::whereIn('name', ['Manager', 'Senior Employee', 'Regular Employee', 'Intern'])
             ->get()
             ->keyBy('name');
@@ -24,12 +27,12 @@ class EmployeeSeeder extends Seeder
         $intern = $classifications['Intern'];
 
         $employees = [
-            ['name' => 'John Smith', 'card_number' => 'EMP001', 'classification_id' => $manager->getKey(), 'status' => EmployeeStatus::ACTIVE],
-            ['name' => 'Sarah Johnson', 'card_number' => 'EMP002', 'classification_id' => $senior->getKey(), 'status' => EmployeeStatus::ACTIVE],
-            ['name' => 'Mike Wilson', 'card_number' => 'EMP003', 'classification_id' => $regular->getKey(), 'status' => EmployeeStatus::ACTIVE],
-            ['name' => 'Lisa Brown', 'card_number' => 'EMP004', 'classification_id' => $regular->getKey(), 'status' => EmployeeStatus::ACTIVE],
-            ['name' => 'David Lee', 'card_number' => 'EMP005', 'classification_id' => $intern->getKey(), 'status' => EmployeeStatus::ACTIVE],
-            ['name' => 'Emma Davis', 'card_number' => 'EMP006', 'classification_id' => $regular->getKey(), 'status' => EmployeeStatus::INACTIVE],
+            ['name' => 'John Smith', 'classification_id' => $manager->classification_id, 'status' => EmployeeStatus::ACTIVE, 'card_id' => $cards[0]->card_id],
+            ['name' => 'Sarah Johnson', 'classification_id' => $senior->classification_id, 'status' => EmployeeStatus::ACTIVE, 'card_id' => $cards[1]->card_id],
+            ['name' => 'Mike Wilson', 'classification_id' => $regular->classification_id, 'status' => EmployeeStatus::ACTIVE, 'card_id' => $cards[2]->card_id],
+            ['name' => 'Lisa Brown', 'classification_id' => $regular->classification_id, 'status' => EmployeeStatus::ACTIVE, 'card_id' => $cards[3]->card_id],
+            ['name' => 'David Lee', 'classification_id' => $intern->classification_id, 'status' => EmployeeStatus::ACTIVE, 'card_id' => $cards[4]->card_id],
+            ['name' => 'Emma Davis', 'classification_id' => $regular->classification_id, 'status' => EmployeeStatus::INACTIVE, 'card_id' => $cards[5]->card_id]
         ];
 
         foreach ($employees as $employee) {
