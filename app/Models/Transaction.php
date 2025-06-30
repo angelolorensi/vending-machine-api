@@ -19,6 +19,7 @@ class Transaction extends Model
         'machine_id',
         'slot_id',
         'product_id',
+        'card_id',
         'points_deducted',
         'transaction_time',
         'status',
@@ -49,5 +50,10 @@ class Transaction extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
+
+    public function card(): BelongsTo
+    {
+        return $this->belongsTo(Card::class, 'card_id', 'card_id');
     }
 }

@@ -16,6 +16,10 @@ return new class extends Migration
             $table->foreignId('employee_id')
                 ->constrained('employees', 'employee_id')
                 ->onDelete('restrict');
+            $table->foreignId('card_id')
+                ->after('employee_id')
+                ->constrained('cards', 'card_id')
+                ->onDelete('restrict');
             $table->foreignId('machine_id')
                 ->constrained('machines', 'machine_id')
                 ->onDelete('restrict');
