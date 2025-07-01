@@ -38,49 +38,6 @@ class CardService
         return $card->fresh();
     }
 
-    public function assignCardToEmployee(int $cardId, int $employeeId): bool
-    {
-        $employee = Employee::find($employeeId);
-        $card = Card::find($cardId);
-
-        if (!$employee) {
-            throw new NotFoundException('Employee not found');
-        }
-
-        if (!$card) {
-            throw new NotFoundException('Card not found');
-        }
-
-        if ($employee->card_id) {
-            throw new \Exception('Employee already has a card assigned');
-        }
-
-        if ($card->employee) {
-            throw new \Exception('Card is already assigned to another employee');
-        }
-
-        $employee->update(['card_id' => $card->card_id]);
-
-        return true;
-    }
-
-    public function removeFromEmployee(int $employeeId): bool
-    {
-        $employee = Employee::find($employeeId);
-
-        if (!$employee) {
-            throw new NotFoundException('Employee not found');
-        }
-
-        if (!$employee->card_id) {
-            throw new \Exception('Employee does not have a card assigned');
-        }
-
-        $employee->update(['card_id' => null]);
-
-        return true;
-    }
-
     public function deleteCard(int $id): bool
     {
         $card = Card::find($id);

@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Filters\CardFilter;
-use App\Http\ApiPagination;
+use App\Actions\AssignCardToEmployeeAction;
+use App\Actions\RemoveCardFromEmployeeAction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CardResource;
-use App\Models\Card;
 use App\Services\CardService;
 use App\Traits\HandleApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Requests\StoreCardRequest;
 use App\Http\Requests\UpdateCardRequest;
 
@@ -21,7 +18,6 @@ class CardController extends Controller
 
     public function __construct(
         private readonly CardService $cardService,
-
     ){}
 
     public function show(int $id): JsonResponse
@@ -32,34 +28,34 @@ class CardController extends Controller
         });
     }
 
-    public function store(): JsonResponse
+    public function store(StoreCardRequest $request): JsonResponse
     {
-        return $this->handleResponse(function (StoreCardRequest $request) {
+        return $this->handleResponse(function () use ($request) {
             $card = $this->cardService->createCard($request->validated());
             return ['message' => 'Card created successfully', 'data' => new CardResource($card)];
         });
     }
 
-    public function update(int $id): JsonResponse
+    public function update(int $id, UpdateCardRequest $request): JsonResponse
     {
-        return $this->handleResponse(function ($id, UpdateCardRequest $request) {
-            $card = $this->cardService->updateCard($id,$request->validated());
+        return $this->handleResponse(function () use ($id, $request) {
+            $card = $this->cardService->updateCard($id, $request->validated());
             return ['message' => 'Card updated successfully', 'data' => new CardResource($card)];
         });
     }
 
-    public function assignCardToEmployee(int $cardId, int $employeeId): JsonResponse
+    public function assignCardToEmployee(int $cardId, int $employeeId, AssignCardToEmployeeAction $action): JsonResponse
     {
-        return $this->handleResponse(function () use ($cardId, $employeeId) {
-            $card = $this->cardService->assignCardToEmployee($cardId, $employeeId);
-            return ['message' => 'Card created and assigned to employee successfully', 'data' => new CardResource($card)];
+        return $this->handleResponse(function () use ($cardId, $employeeId, $action) {
+            $action->execute($cardId, $employeeId);
+            return ['message' => 'Card assigned to employee successfully'];
         });
     }
 
-    public function removeFromEmployee(int $employeeId): JsonResponse
+    public function removeFromEmployee(int $employeeId, RemoveCardFromEmployeeAction $action): JsonResponse
     {
-        return $this->handleResponse(function () use ($employeeId) {
-            $this->cardService->removeFromEmployee($employeeId);
+        return $this->handleResponse(function () use ($employeeId, $action) {
+            $action->execute($employeeId);
             return ['message' => 'Card removed from employee successfully'];
         });
     }
