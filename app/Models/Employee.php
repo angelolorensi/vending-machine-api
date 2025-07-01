@@ -20,7 +20,8 @@ class Employee extends Model
         'name',
         'card_number',
         'classification_id',
-        'status'
+        'status',
+        'card_id',
     ];
 
     protected $casts = [

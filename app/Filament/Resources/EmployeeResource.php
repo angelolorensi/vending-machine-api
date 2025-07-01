@@ -56,7 +56,7 @@ class EmployeeResource extends Resource
                     ])
                     ->searchable()
                     ->preload()
-                    ->required(),
+                    ->nullable(),
                 Forms\Components\Select::make('classification_id')
                     ->relationship('classification', 'name')
                     ->required(),
