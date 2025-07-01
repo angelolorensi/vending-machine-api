@@ -12,6 +12,8 @@ use App\Traits\HandleApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Http\Requests\StoreMachineRequest;
+use App\Http\Requests\UpdateMachineRequest;
 
 class MachineController extends Controller
 {
@@ -34,17 +36,19 @@ class MachineController extends Controller
         });
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function store(StoreMachineRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'location' => 'sometimes|string|max:255',
-            'status' => 'sometimes|in:active,inactive'
-        ]);
+        return $this->handleResponse(function () use ($request) {
+            $machine = $this->machineService->createMachine($request->validated());
+            return ['message' => 'Machine created successfully', 'data' => new MachineResource($machine)];
+        });
+    }
 
+    public function update(UpdateMachineRequest $request, int $id): JsonResponse
+    {
         return $this->handleResponse(function () use ($id, $request) {
-            $machine = $this->machineService->updateMachine($id, $request->all());
-            return ['message' => 'Machine updated successfully', 'data' => $machine];
+            $machine = $this->machineService->updateMachine($id, $request->validated());
+            return ['message' => 'Machine updated successfully', 'data' => new MachineResource($machine)];
         });
     }
 

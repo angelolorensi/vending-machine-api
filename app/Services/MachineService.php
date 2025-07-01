@@ -4,16 +4,9 @@ namespace App\Services;
 
 use App\Models\Machine;
 use App\Exceptions\NotFoundException;
-use Illuminate\Database\Eloquent\Collection;
 
 class MachineService
 {
-
-    public function getAllMachines(): Collection
-    {
-        return Machine::with('slots.product')->get();
-    }
-
     public function getMachineById(int $id): Machine
     {
         $machine = Machine::with('slots.product')->find($id);
