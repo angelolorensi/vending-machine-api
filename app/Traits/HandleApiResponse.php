@@ -19,8 +19,9 @@ trait HandleApiResponse
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], $e->getCode() ?: 500);
+                'message' => 'Internal server error',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

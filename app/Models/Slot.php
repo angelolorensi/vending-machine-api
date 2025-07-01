@@ -16,7 +16,8 @@ class Slot extends Model
 
     protected $fillable = [
         'machine_id',
-        'product_id'
+        'product_id',
+        'number',
     ];
 
     public function machine(): BelongsTo
