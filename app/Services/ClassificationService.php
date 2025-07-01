@@ -8,15 +8,9 @@ use App\Filters\ClassificationFilter;
 
 class ClassificationService
 {
-    public function getClassificationById(int $id, ?ClassificationFilter $filter = null): Classification
+    public function getClassificationById(int $id): Classification
     {
-        $query = Classification::query();
-
-        if ($filter) {
-            $query = $filter->apply($query);
-        }
-
-        $classification = $query->find($id);
+        $classification = Classification::with('employees')->find($id);
 
         if (!$classification) {
             throw new NotFoundException('Classification not found');

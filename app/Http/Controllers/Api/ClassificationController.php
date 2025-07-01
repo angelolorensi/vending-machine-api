@@ -29,11 +29,10 @@ class ClassificationController extends Controller
         return $this->apiPagination->paginate(Classification::query(), ClassificationResource::class, new ClassificationFilter($request));
     }
 
-    public function show(Request $request, int $id): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        return $this->handleResponse(function () use ($request, $id) {
-            $filter = new ClassificationFilter($request);
-            $classification = $this->classificationService->getClassificationById($id, $filter);
+        return $this->handleResponse(function () use ($id) {
+            $classification = $this->classificationService->getClassificationById($id);
             return new ClassificationResource($classification);
         });
     }
