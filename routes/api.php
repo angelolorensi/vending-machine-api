@@ -1,11 +1,4 @@
 <?php
 
-use App\Http\Controllers\Api\MachineController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-Route::apiResource('machines', MachineController::class);
+require __DIR__ . '/api/machines.php';
+require __DIR__ . '/api/auth.php';

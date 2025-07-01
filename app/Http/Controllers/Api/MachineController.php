@@ -11,6 +11,7 @@ use App\Services\MachineService;
 use App\Traits\HandleApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class MachineController extends Controller
 {
@@ -21,7 +22,7 @@ class MachineController extends Controller
         private readonly ApiPagination  $apiPagination
     ){}
 
-    public function index(Request $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
         return $this->apiPagination->paginate(Machine::query(), MachineResource::class, new MachineFilter($request));
     }
