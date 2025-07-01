@@ -32,11 +32,35 @@ class CardController extends Controller
         });
     }
 
-    public function assignCardToEmployee(int $employeeId): JsonResponse
+    public function store(): JsonResponse
+    {
+        return $this->handleResponse(function (StoreCardRequest $request) {
+            $card = $this->cardService->createCard($request->validated());
+            return ['message' => 'Card created successfully', 'data' => new CardResource($card)];
+        });
+    }
+
+    public function update(int $id): JsonResponse
+    {
+        return $this->handleResponse(function ($id, UpdateCardRequest $request) {
+            $card = $this->cardService->updateCard($id,$request->validated());
+            return ['message' => 'Card updated successfully', 'data' => new CardResource($card)];
+        });
+    }
+
+    public function assignCardToEmployee(int $cardId, int $employeeId): JsonResponse
+    {
+        return $this->handleResponse(function () use ($cardId, $employeeId) {
+            $card = $this->cardService->assignCardToEmployee($cardId, $employeeId);
+            return ['message' => 'Card created and assigned to employee successfully', 'data' => new CardResource($card)];
+        });
+    }
+
+    public function removeFromEmployee(int $employeeId): JsonResponse
     {
         return $this->handleResponse(function () use ($employeeId) {
-            $card = $this->cardService->createCardForEmployee($employeeId);
-            return ['message' => 'Card created and assigned to employee successfully', 'data' => new CardResource($card)];
+            $this->cardService->removeFromEmployee($employeeId);
+            return ['message' => 'Card removed from employee successfully'];
         });
     }
 
