@@ -16,7 +16,6 @@ class StoreEmployeeRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'classification_id' => 'required|exists:classifications,classification_id',
-            'card_id' => 'required|exists:cards,card_id|unique:employees,card_id',
             'status' => 'required|in:active,inactive',
         ];
     }

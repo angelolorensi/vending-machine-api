@@ -20,7 +20,15 @@ class EmployeeService
 
     public function createEmployee(array $data): Employee
     {
-        return Employee::create($data);
+        $employee = Employee::create($data);
+
+        $employee->card()->create([
+            'card_number' => 'EMP-' . $employee->employee_id,
+            'points_balance' => 0,
+            'status' => 'active',
+        ]);
+
+        return $employee;
     }
 
     public function updateEmployee(int $id, array $data): Employee
