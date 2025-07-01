@@ -20,7 +20,16 @@ class MachineService
 
     public function createMachine(array $data): Machine
     {
-        return Machine::create($data);
+        $machine = Machine::create($data);
+
+        for ($i = 1; $i <= 30; $i++) {
+            $machine->slots()->create([
+                'number' => $i,
+                'product_id' => null,
+            ]);
+        }
+
+        return $machine;
     }
 
     public function updateMachine(int $id, array $data): Machine

@@ -24,18 +24,6 @@ class Machine extends Model
         'status' => MachineStatus::class,
     ];
 
-    protected static function booted(): void
-    {
-        static::created(function ($machine) {
-            for ($i = 1; $i <= 30; $i++) {
-                $machine->slots()->create([
-                    'number' => $i,
-                    'product_id' => null,
-                ]);
-            }
-        });
-    }
-
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'machine_id');
