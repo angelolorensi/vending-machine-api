@@ -18,7 +18,8 @@ class Classification extends Model
         'daily_juice_limit',
         'daily_meal_limit',
         'daily_snack_limit',
-        'daily_point_limit'
+        'daily_point_limit',
+        'daily_point_recharge_amount',
     ];
 
 

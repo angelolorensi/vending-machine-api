@@ -16,6 +16,7 @@ class ClassificationResource extends JsonResource
             'daily_meal_limit' => $this->daily_meal_limit,
             'daily_snack_limit' => $this->daily_snack_limit,
             'daily_point_limit' => $this->daily_point_limit,
+            'daily_point_recharge_amount' => $this->daily_point_recharge_amount,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'employees' => $this->whenLoaded('employees', function () {

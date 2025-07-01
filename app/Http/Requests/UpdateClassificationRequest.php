@@ -19,6 +19,7 @@ class UpdateClassificationRequest extends FormRequest
             'daily_meal_limit' => 'sometimes|integer|min:0',
             'daily_snack_limit' => 'sometimes|integer|min:0',
             'daily_point_limit' => 'sometimes|integer|min:0',
+            'daily_point_recharge_amount' => 'sometimes|integer|min:0',
         ];
     }
 }

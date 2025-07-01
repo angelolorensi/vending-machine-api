@@ -45,6 +45,10 @@ class ClassificationResource extends Resource
                     ->label('Limite diário de pontos')
                     ->required()
                     ->numeric(),
+                Forms\Components\TextInput::make('daily_point_recharge_amount')
+                    ->label('Quantidade de recarga diária de pontos')
+                    ->required()
+                    ->numeric(),
             ]);
     }
 
@@ -69,6 +73,10 @@ class ClassificationResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('daily_point_limit')
                     ->label('Limite diário de pontos')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('daily_point_recharge_amount')
+                    ->label('Quantidade de recarga diária de pontos')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

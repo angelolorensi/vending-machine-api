@@ -19,6 +19,7 @@ class StoreClassificationRequest extends FormRequest
             'daily_meal_limit' => 'required|integer|min:0',
             'daily_snack_limit' => 'required|integer|min:0',
             'daily_point_limit' => 'required|integer|min:0',
+            'daily_point_recharge_amount' => 'required|integer|min:0',
         ];
     }
 }

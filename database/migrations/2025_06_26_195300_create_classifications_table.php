@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('daily_meal_limit');
             $table->integer('daily_snack_limit');
             $table->integer('daily_point_limit');
+            $table->integer('daily_point_recharge_amount');
             $table->timestamps();
         });
     }
