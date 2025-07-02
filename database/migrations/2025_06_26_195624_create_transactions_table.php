@@ -32,7 +32,7 @@ return new class extends Migration
             $table->integer('points_deducted');
             $table->timestamp('transaction_time');
             $table->enum('status', ['success', 'failure']);
-            $table->string('failure_reason');
+            $table->string('failure_reason')->nullable();
             $table->timestamps();
         });
     }
