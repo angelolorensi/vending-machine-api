@@ -10,3 +10,4 @@ Route::put('cards/{id}', [CardController::class, 'update']);
 Route::patch('cards/{id}', [CardController::class, 'update']);
 Route::post('cards/{cardId}/assign-to-employee/{employeeId}', [CardController::class, 'assignCardToEmployee']);
 Route::post('cards/remove-from-employee/{employeeId}', [CardController::class, 'removeFromEmployee']);
+Route::post('cards/verify', [CardController::class, 'verifyCard']);

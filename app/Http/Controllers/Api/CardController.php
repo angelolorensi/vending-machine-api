@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\AssignCardToEmployeeAction;
 use App\Actions\RemoveCardFromEmployeeAction;
+use App\Actions\VerifyCardAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CardVerificationRequest;
 use App\Http\Resources\CardResource;
+use App\Http\Resources\CardVerificationResource;
 use App\Services\CardService;
 use App\Traits\HandleApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -41,6 +44,14 @@ class CardController extends Controller
         return $this->handleResponse(function () use ($id, $request) {
             $card = $this->cardService->updateCard($id, $request->validated());
             return ['message' => 'Card updated successfully', 'data' => new CardResource($card)];
+        });
+    }
+
+    public function verifyCard(CardVerificationRequest $request, VerifyCardAction $action): JsonResponse
+    {
+        return $this->handleResponse(function () use ($request, $action) {
+            $result = $action->execute($request->validated());
+            return ['message' => 'Card verification successful', 'data' => new CardVerificationResource($result)];
         });
     }
 

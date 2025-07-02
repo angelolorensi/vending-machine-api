@@ -20,6 +20,7 @@ trait HandleApiResponse
             return response()->json([
                 'success' => false,
                 'message' => 'Internal server error',
+                'exception' => get_class($e),
                 'error' => $e->getMessage()
             ], 500);
         }
