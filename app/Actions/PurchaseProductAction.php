@@ -12,19 +12,28 @@ use App\Exceptions\NotActiveException;
 use App\Exceptions\InsufficientPointsException;
 use App\Exceptions\DailyLimitExceededException;
 use App\Models\Card;
-use App\Models\Machine;
 use App\Models\Slot;
-use App\Models\Transaction;
+use App\Services\CardService;
+use App\Services\MachineService;
+use App\Services\SlotService;
+use App\Services\TransactionService;
 use Carbon\Carbon;
 
 class PurchaseProductAction implements ActionContract
 {
+    public function __construct(
+        private readonly CardService $cardService,
+        private readonly MachineService $machineService,
+        private readonly SlotService $slotService,
+        private readonly TransactionService $transactionService
+    ) {}
+
     public function execute(mixed ...$params): array
     {
         [$cardNumber, $machineId, $slotNumber] = $params;
 
         $card = $this->verifyCard($cardNumber);
-
+        $machine = $this->machineService->getMachineById($machineId);
         $slot = $this->verifyMachineAndSlot($machineId, $slotNumber);
 
         if (!$slot->product) {
@@ -37,9 +46,22 @@ class PurchaseProductAction implements ActionContract
 
         $this->checkDailyLimits($card->employee, $slot->product);
 
-        $transaction = $this->createTransaction($card, $slot);
+        $transaction = $this->transactionService->createTransaction([
+            'employee_id' => $card->employee->employee_id,
+            'card_id' => $card->card_id,
+            'machine_id' => $slot->machine_id,
+            'slot_id' => $slot->slot_id,
+            'product_id' => $slot->product->product_id,
+            'points_deducted' => $slot->product->price_points,
+            'transaction_time' => now(),
+            'status' => TransactionStatus::SUCCESS,
+            'failure_reason' => null,
+        ]);
 
-        $card->decrement('points_balance', $slot->product->price_points);
+        $newBalance = $card->points_balance - $slot->product->price_points;
+        $this->cardService->updateCard($card->card_id, [
+            'points_balance' => $newBalance
+        ]);
 
         return [
             'product' => [
@@ -75,7 +97,7 @@ class PurchaseProductAction implements ActionContract
 
     private function verifyMachineAndSlot(int $machineId, int $slotNumber): Slot
     {
-        $machine = Machine::find($machineId);
+        $machine = $this->machineService->getMachineById($machineId);
 
         if (!$machine) {
             throw new NotFoundException('Machine not found');
@@ -85,27 +107,17 @@ class PurchaseProductAction implements ActionContract
             throw new NotActiveException('Machine is not active');
         }
 
-        $slot = Slot::with('product')
-            ->where('machine_id', $machineId)
-            ->where('number', $slotNumber)
-            ->first();
-
-        if (!$slot) {
-            throw new NotFoundException('Slot not found');
-        }
-
-        return $slot;
+        return $this->slotService->getSlotByMachineAndNumber($machineId, $slotNumber);
     }
 
     private function checkDailyLimits($employee, $product): void
     {
-        $today = Carbon::today();
+        $today = Carbon::today()->toDateString();
 
-        $todayTransactions = Transaction::where('employee_id', $employee->employee_id)
-            ->whereDate('transaction_time', $today)
-            ->where('status', TransactionStatus::SUCCESS)
-            ->with('product.productCategory')
-            ->get();
+        $todayTransactions = $this->transactionService->getEmployeeDailyTransactions(
+            $employee->employee_id,
+            $today
+        );
 
         $classification = $employee->classification;
 
@@ -136,20 +148,5 @@ class PurchaseProductAction implements ActionContract
         if (($totalPointsUsed + $product->price_points) > $classification->daily_point_limit) {
             throw new DailyLimitExceededException('Daily point limit would be exceeded');
         }
-    }
-
-    private function createTransaction(Card $card, Slot $slot): Transaction
-    {
-        return Transaction::create([
-            'employee_id' => $card->employee->employee_id,
-            'card_id' => $card->card_id,
-            'machine_id' => $slot->machine_id,
-            'slot_id' => $slot->slot_id,
-            'product_id' => $slot->product->product_id,
-            'points_deducted' => $slot->product->price_points,
-            'transaction_time' => now(),
-            'status' => TransactionStatus::SUCCESS,
-            'failure_reason' => null,
-        ]);
     }
 }

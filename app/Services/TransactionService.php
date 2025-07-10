@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Transaction;
 use App\Exceptions\NotFoundException;
+use Illuminate\Support\Collection;
 
 class TransactionService
 {
@@ -46,7 +47,7 @@ class TransactionService
         return $transaction->delete();
     }
 
-    public function getEmployeeDailyTransactions(int $employeeId, string $date): \Illuminate\Database\Eloquent\Collection
+    public function getEmployeeDailyTransactions(int $employeeId, string $date): Collection
     {
         return Transaction::where('employee_id', $employeeId)
             ->whereDate('transaction_time', $date)

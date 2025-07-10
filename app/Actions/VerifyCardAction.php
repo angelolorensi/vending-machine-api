@@ -8,21 +8,19 @@ use App\Enums\EmployeeStatus;
 use App\Exceptions\BlockedCardException;
 use App\Exceptions\NotActiveException;
 use App\Models\Card;
-use App\Exceptions\NotFoundException;
+use App\Services\CardService;
 
 class VerifyCardAction implements ActionContract
 {
+    public function __construct(
+        private readonly CardService $cardService
+    ) {}
+
     public function execute(mixed ...$params): Card
     {
         [$cardNumber] = $params;
 
-        $card = Card::with(['employee'])
-            ->where('card_number', $cardNumber)
-            ->first();
-
-        if (!$card) {
-            throw new NotFoundException('Card not found');
-        }
+        $card = $this->cardService->getCardByNumber($cardNumber);
 
         if ($card->status == CardStatus::BLOCKED) {
             throw new BlockedCardException();

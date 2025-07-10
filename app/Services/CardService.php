@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Models\Card;
 use App\Exceptions\NotFoundException;
-use App\Models\Employee;
-use Illuminate\Support\Str;
 
 class CardService
 {
@@ -13,6 +11,19 @@ class CardService
     public function getCardById(int $id): Card
     {
         $card = Card::with(['employee', 'transactions'])->find($id);
+
+        if (!$card) {
+            throw new NotFoundException('Card not found');
+        }
+
+        return $card;
+    }
+
+    public function getCardByNumber(string $cardNumber): Card
+    {
+        $card = Card::with(['employee'])
+            ->where('card_number', $cardNumber)
+            ->first();
 
         if (!$card) {
             throw new NotFoundException('Card not found');
