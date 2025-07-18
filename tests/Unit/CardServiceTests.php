@@ -1,6 +1,6 @@
 <?php
 
-namespace Feature;
+namespace Tests\Unit;
 
 use App\Enums\CardStatus;
 use App\Exceptions\NotFoundException;
