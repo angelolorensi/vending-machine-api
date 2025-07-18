@@ -9,7 +9,7 @@ class ProductService
 {
     public function getProductById(int $id): Product
     {
-        $product = Product::with(['category', 'slots'])->find($id);
+        $product = Product::with(['productCategory', 'slots'])->find($id);
 
         if (!$product) {
             throw new NotFoundException('Product not found');
