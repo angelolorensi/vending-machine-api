@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Transaction;
 use App\Exceptions\NotFoundException;
+use App\Enums\TransactionStatus;
 use Illuminate\Support\Collection;
 
 class TransactionService
@@ -51,7 +52,7 @@ class TransactionService
     {
         return Transaction::where('employee_id', $employeeId)
             ->whereDate('transaction_time', $date)
-            ->where('status', 'success')
+            ->where('status', TransactionStatus::COMPLETED)
             ->with('product.productCategory')
             ->get();
     }

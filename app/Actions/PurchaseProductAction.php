@@ -54,7 +54,7 @@ class PurchaseProductAction implements ActionContract
             'product_id' => $slot->product->product_id,
             'points_deducted' => $slot->product->price_points,
             'transaction_time' => now(),
-            'status' => TransactionStatus::SUCCESS,
+            'status' => TransactionStatus::COMPLETED,
             'failure_reason' => null,
         ]);
 

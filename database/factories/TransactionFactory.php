@@ -22,8 +22,23 @@ class TransactionFactory extends Factory
             'product_id' => Product::factory(),
             'points_deducted' => $this->faker->numberBetween(2, 15),
             'transaction_time' => $this->faker->dateTimeThisMonth(),
-            'status' => TransactionStatus::SUCCESS,
+            'status' => TransactionStatus::COMPLETED,
             'failure_reason' => null,
         ];
+    }
+
+    public function failed(): static
+    {
+        return $this->state([
+            'status' => TransactionStatus::FAILED,
+            'failure_reason' => $this->faker->sentence(),
+        ]);
+    }
+
+    public function pending(): static
+    {
+        return $this->state([
+            'status' => TransactionStatus::PENDING,
+        ]);
     }
 }

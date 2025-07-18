@@ -31,7 +31,6 @@ class Transaction extends Model
         'status' => TransactionStatus::class,
     ];
 
-    // Relationships
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
