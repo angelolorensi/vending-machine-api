@@ -17,12 +17,17 @@ trait HandleApiResponse
                 'data' => $result
             ]);
         } catch (Throwable $e) {
-            return response()->json([
+            $errorResponse = [
                 'success' => false,
                 'message' => 'Internal server error',
-                'exception' => get_class($e),
-                'error' => $e->getMessage()
-            ], 500);
+            ];
+
+            if(!app()->isProduction()){
+                $errorResponse['exception'] = get_class($e);
+                $errorResponse['error'] = $e->getMessage();
+            }
+
+            return response()->json($errorResponse, 500);
         }
     }
 }
