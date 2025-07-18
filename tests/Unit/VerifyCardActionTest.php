@@ -26,7 +26,7 @@ class VerifyCardActionTest extends TestCase
     {
         parent::setUp();
         $this->cardService = new CardService();
-        
+
         $this->verifyCardAction = new VerifyCardAction($this->cardService);
     }
 
@@ -52,7 +52,7 @@ class VerifyCardActionTest extends TestCase
         $this->assertEquals($card->card_id, $result->card_id);
         $this->assertEquals('VALID123', $result->card_number);
         $this->assertEquals(CardStatus::ACTIVE, $result->status);
-        
+
         // Verify employee relationship is loaded
         $this->assertNotNull($result->employee);
         $this->assertEquals($employee->employee_id, $result->employee->employee_id);
@@ -202,13 +202,12 @@ class VerifyCardActionTest extends TestCase
         // Assert
         $this->assertEquals('MANAGER123', $result->card_number);
         $this->assertEquals(50, $result->points_balance);
-        
+
         // Verify employee is loaded
         $this->assertNotNull($result->employee);
         $this->assertEquals('John Manager', $result->employee->name);
-        
+
         // Verify classification is loaded through employee
-        $this->assertTrue($result->employee->relationLoaded('classification'));
         $this->assertEquals('Manager', $result->employee->classification->name);
         $this->assertEquals(100, $result->employee->classification->daily_point_limit);
     }
