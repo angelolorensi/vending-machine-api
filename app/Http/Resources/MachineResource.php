@@ -21,6 +21,7 @@ class MachineResource extends JsonResource
                     return [
                         'slot_id' => $slot->slot_id,
                         'number' => $slot->number,
+                        'quantity' => $slot->quantity,
                         'product' => $slot->product ? [
                             'product_id' => $slot->product->product_id,
                             'name' => $slot->product->name,

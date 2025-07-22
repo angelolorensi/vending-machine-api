@@ -33,12 +33,7 @@ class PurchaseProductAction implements ActionContract
         [$cardNumber, $machineId, $slotNumber] = $params;
 
         $card = $this->verifyCard($cardNumber);
-        $machine = $this->machineService->getMachineById($machineId);
         $slot = $this->verifyMachineAndSlot($machineId, $slotNumber);
-
-        if (!$slot->product) {
-            throw new NotFoundException('No product in this slot');
-        }
 
         if ($card->points_balance < $slot->product->price_points) {
             throw new InsufficientPointsException('Not enough points for this product');
@@ -62,6 +57,17 @@ class PurchaseProductAction implements ActionContract
         $this->cardService->updateCard($card->card_id, [
             'points_balance' => $newBalance
         ]);
+
+        // Update slot inventory
+        $newQuantity = $slot->quantity - 1;
+        $updateData = ['quantity' => $newQuantity];
+
+        // If quantity reaches 0, remove the product from the slot
+        if ($newQuantity <= 0) {
+            $updateData['product_id'] = null;
+        }
+
+        $this->slotService->updateSlot($slot->slot_id, $updateData);
 
         return [
             'product' => [
@@ -99,15 +105,21 @@ class PurchaseProductAction implements ActionContract
     {
         $machine = $this->machineService->getMachineById($machineId);
 
-        if (!$machine) {
-            throw new NotFoundException('Machine not found');
-        }
-
         if ($machine->status !== MachineStatus::ACTIVE) {
             throw new NotActiveException('Machine is not active');
         }
 
-        return $this->slotService->getSlotByMachineAndNumber($machineId, $slotNumber);
+        $slot = $this->slotService->getSlotByMachineAndNumber($machineId, $slotNumber);
+
+        if (!$slot->product) {
+            throw new NotFoundException('No product in this slot');
+        }
+
+        if ($slot->quantity <= 0) {
+            throw new NotFoundException('Product is out of stock');
+        }
+
+        return $slot;
     }
 
     private function checkDailyLimits($employee, $product): void
@@ -129,7 +141,7 @@ class PurchaseProductAction implements ActionContract
         switch (strtolower($categoryName)) {
             case 'beverages':
                 if ($categoryTransactions >= $classification->daily_juice_limit) {
-                    throw new DailyLimitExceededException('Daily juice limit exceeded');
+                    throw new DailyLimitExceededException('Daily beverage limit exceeded');
                 }
                 break;
             case 'snacks':

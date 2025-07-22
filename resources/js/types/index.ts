@@ -4,4 +4,4 @@ export type { Card, CardVerificationResponse } from './Card';
 export type { Product } from './Product';
 export type { Slot } from './Slot';
 export type { Machine, MachineWithSlots, MachineResponse, MachinesResponse, MachineWithSlotsResponse } from './Machine';
-export type { Purchase, PurchaseResponse } from './Purchase';
+export type { Purchase, PurchaseProduct, PurchaseResponse } from './Purchase';

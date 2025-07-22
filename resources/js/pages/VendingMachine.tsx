@@ -100,21 +100,28 @@ const VendingMachine: React.FC = () => {
             );
 
             if (result.success) {
-                alert(`Purchase successful! ${result.data.product.name} - ${result.data.product.points_deducted} points deducted`);
+                console.log('Purchase result data:', result.data);
 
-                // Update card data with new balance
-                setCardData(prev => ({
+                if (result.data && result.data.product) {
+                    alert(`Purchase successful! ${result.data.product.name} - ${result.data.product.points_deducted} points deducted. Remaining balance: ${result.data.remaining_balance} points`);
+                } else {
+                    alert('Purchase successful! Please check your balance.');
+                }
+
+                setCardData(prev => prev ? ({
                     ...prev,
                     points_balance: result.data.remaining_balance
-                }));
+                }) : null);
 
                 setSelectedSlot(null);
 
-                // Refresh machine slots to show updated inventory
                 await fetchMachineSlots(selectedMachine);
+            } else {
+                alert(result.message || 'Purchase failed. Please try again.');
             }
         } catch (error) {
             console.error('Unexpected error occurred during purchase', error);
+            alert('An unexpected error occurred. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -187,7 +194,7 @@ const VendingMachine: React.FC = () => {
                                     Loading...
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-6 gap-2 justify-items-center">
+                                <div className="grid grid-cols-6 gap-3 justify-items-center">
                                     {slots.map((slot) => (
                                         <Slot
                                             key={slot.slot_id}

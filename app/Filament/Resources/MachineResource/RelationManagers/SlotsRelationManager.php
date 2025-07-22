@@ -30,6 +30,12 @@ class SlotsRelationManager extends RelationManager
                 Forms\Components\Select::make('product_id')
                     ->label('Produto')
                     ->relationship('product', 'name'),
+                Forms\Components\TextInput::make('quantity')
+                    ->label('Quantidade')
+                    ->numeric()
+                    ->required()
+                    ->minValue(0)
+                    ->maxValue(1000),
             ]);
     }
 
@@ -44,6 +50,10 @@ class SlotsRelationManager extends RelationManager
                     ->searchable(),
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Produto')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('quantity')
+                    ->label('Quantidade')
                     ->sortable()
                     ->searchable(),
             ])

@@ -18,6 +18,7 @@ class Slot extends Model
         'machine_id',
         'product_id',
         'number',
+        'quantity',
     ];
 
     public function machine(): BelongsTo

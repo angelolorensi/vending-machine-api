@@ -40,6 +40,12 @@ class SlotResource extends Resource
                 Forms\Components\Select::make('product_id')
                     ->label('Produto')
                     ->relationship('product', 'name'),
+                Forms\Components\TextInput::make('quantity')
+                    ->label('Quantidade')
+                    ->numeric()
+                    ->required()
+                    ->minValue(0)
+                    ->maxValue(10),
             ]);
     }
 
@@ -57,6 +63,11 @@ class SlotResource extends Resource
                     ->numeric()
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('quantity')
+                    ->label('Quantidade')
+                    ->numeric()
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
                     ->dateTime()
