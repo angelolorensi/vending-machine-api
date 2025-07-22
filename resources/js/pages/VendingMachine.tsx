@@ -76,13 +76,17 @@ const VendingMachine: React.FC = () => {
         }
     };
 
-    const handleSlotClick = (slot: SlotType) => {
+    const handleSlotSelect = (slot: SlotType) => {
         if (!isCardVerified) {
             alert('Please verify your card first');
             return;
         }
         if (!slot.product) {
             alert('This slot is empty');
+            return;
+        }
+        if (slot.quantity <= 0) {
+            alert('This product is out of stock');
             return;
         }
         setSelectedSlot(slot);
@@ -100,8 +104,6 @@ const VendingMachine: React.FC = () => {
             );
 
             if (result.success) {
-                console.log('Purchase result data:', result.data);
-
                 if (result.data && result.data.product) {
                     alert(`Purchase successful! ${result.data.product.name} - ${result.data.product.points_deducted} points deducted. Remaining balance: ${result.data.remaining_balance} points`);
                 } else {
@@ -200,7 +202,7 @@ const VendingMachine: React.FC = () => {
                                             key={slot.slot_id}
                                             slot={slot}
                                             isSelected={selectedSlot?.slot_id === slot.slot_id}
-                                            onClick={handleSlotClick}
+                                            onClick={() => {}} // Disabled - selection now via buttons
                                         />
                                     ))}
                                 </div>
@@ -214,6 +216,8 @@ const VendingMachine: React.FC = () => {
                                 onPurchase={handlePurchase}
                                 isLoading={isLoading}
                                 isCardVerified={isCardVerified}
+                                slots={slots}
+                                onSlotSelect={handleSlotSelect}
                             />
                         </div>
                     </div>

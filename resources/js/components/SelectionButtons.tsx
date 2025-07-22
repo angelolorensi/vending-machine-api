@@ -1,22 +1,63 @@
 import React from 'react';
+import type { Slot as SlotType } from '@/types';
 
-const SelectionButtons = ({ selectedSlot, onPurchase, isLoading, isCardVerified }) => {
+interface SelectionButtonsProps {
+    selectedSlot: SlotType | null;
+    onPurchase: () => void;
+    isLoading: boolean;
+    isCardVerified: boolean;
+    slots: SlotType[];
+    onSlotSelect: (slot: SlotType) => void;
+}
+
+const SelectionButtons: React.FC<SelectionButtonsProps> = ({ 
+    selectedSlot, 
+    onPurchase, 
+    isLoading, 
+    isCardVerified, 
+    slots, 
+    onSlotSelect 
+}) => {
     const buttonRows = ['A', 'B', 'C', 'D', 'E'];
     const buttonCols = [1, 2, 3, 4, 5, 6];
+
+    const handleSlotSelection = (row: string, col: number) => {
+        const slotCode = `${row}${col}`;
+        const slot = slots.find(s => `${s.row}${s.col}` === slotCode);
+        if (slot && slot.product && slot.quantity > 0) {
+            onSlotSelect(slot);
+        }
+    };
 
     return (
         <div className="bg-gray-800 p-4 rounded">
             <div className="text-yellow-400 text-xs font-bold mb-2 text-center">SELECTION</div>
-            <div className="grid grid-cols-3 gap-1 mb-4 max-h-32 overflow-y-auto">
-                {buttonRows.slice(0, 6).map(row =>
-                    buttonCols.slice(0, 6).map(col => (
-                        <button
-                            key={`${row}${col}`}
-                            className="bg-black border border-gray-600 text-white text-xs font-mono py-1 px-1 rounded hover:bg-gray-900"
-                        >
-                            {row}{col}
-                        </button>
-                    ))
+            <div className="grid grid-cols-3 gap-1 mb-4">
+                {buttonRows.slice(0, 5).map(row =>
+                    buttonCols.map(col => {
+                        const slotCode = `${row}${col}`;
+                        const slot = slots.find(s => `${s.row}${s.col}` === slotCode);
+                        const hasAvailableProduct = slot && slot.product && slot.quantity > 0;
+                        const isSelectedButton = selectedSlot && `${selectedSlot.row}${selectedSlot.col}` === slotCode;
+                        
+                        return (
+                            <button
+                                key={slotCode}
+                                onClick={() => handleSlotSelection(row, col)}
+                                disabled={!hasAvailableProduct}
+                                className={`
+                                    text-xs font-mono py-1 px-1 rounded transition-colors border
+                                    ${hasAvailableProduct 
+                                        ? 'bg-black border-gray-600 text-white hover:bg-gray-900 hover:border-yellow-400' 
+                                        : 'bg-gray-700 border-gray-700 text-gray-500 cursor-not-allowed'
+                                    }
+                                    ${isSelectedButton ? 'bg-yellow-600 border-yellow-400 text-black' : ''}
+                                `}
+                            >
+                                {slotCode}
+                            </button>
+                        );
+                    })
                 )}
             </div>
 

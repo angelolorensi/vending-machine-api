@@ -27,14 +27,12 @@ const Slot: React.FC<SlotProps> = ({ slot, isSelected, onClick }) => {
 
     return (
         <div className="relative">
-            <button
-                onClick={() => onClick(slot)}
-                disabled={!hasProduct || isOutOfStock}
+            <div
                 className={`
                     w-24 h-28 rounded-lg border-4 transition-all duration-200 relative overflow-hidden
                     ${hasProduct && !isOutOfStock
-                    ? 'border-gray-400 hover:border-yellow-400 shadow-lg'
-                    : 'border-gray-600 opacity-50 cursor-not-allowed'
+                    ? 'border-gray-400 shadow-lg'
+                    : 'border-gray-600 opacity-50'
                 }
                     ${isSelected ? 'border-yellow-400 ring-2 ring-yellow-300' : ''}
                     ${isOutOfStock ? 'border-red-400' : ''}
@@ -81,7 +79,7 @@ const Slot: React.FC<SlotProps> = ({ slot, isSelected, onClick }) => {
                         OUT OF STOCK
                     </div>
                 )}
-            </button>
+            </div>
         </div>
     );
 };
