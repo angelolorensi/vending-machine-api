@@ -1,7 +1,8 @@
-import ErrorHandler from '../utils/errorHandler.js';
+import ErrorHandler from '@/utils/errorHandler';
+import type { Card, ServiceResult } from '@/types';
 
 class CardService {
-    static async verifyCard(cardNumber) {
+    static async verifyCard(cardNumber: string): Promise<ServiceResult<Card>> {
         try {
             const response = await fetch('/api/cards/verify', {
                 method: 'POST',
@@ -12,9 +13,9 @@ class CardService {
                 body: JSON.stringify({ card_number: cardNumber }),
             });
 
-            return await ErrorHandler.handleResponse(response);
+            return await ErrorHandler.handleResponse<Card>(response);
         } catch (error) {
-            return ErrorHandler.handleError(error);
+            return ErrorHandler.handleError(error as Error);
         }
     }
 }

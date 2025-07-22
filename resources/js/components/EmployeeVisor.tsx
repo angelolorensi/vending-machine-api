@@ -1,10 +1,16 @@
 import React from 'react';
+import type { Card } from '@/types';
 
-const EmployeeVisor = ({ cardData, isCardVerified }) => {
+interface EmployeeVisorProps {
+    cardData: Card | null;
+    isCardVerified: boolean;
+}
+
+const EmployeeVisor: React.FC<EmployeeVisorProps> = ({ cardData, isCardVerified }) => {
     console.log('EmployeeVisor cardData:', cardData);
     
     // Handle case where cardData has nested structure
-    const employeeData = cardData?.data || cardData;
+    const employeeData = (cardData as any)?.data || cardData;
     
     return (
         <div className="bg-black p-3 m-4 rounded border border-gray-600">

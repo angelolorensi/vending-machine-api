@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import CardService from '../services/CardService';
-import PurchaseService from '../services/PurchaseService';
-import SlotService from '../services/SlotService';
-import MachineService from "../services/MachineService";
-import CardReader from '../components/CardReader';
-import EmployeeVisor from '../components/EmployeeVisor';
-import Slot from '../components/Slot';
-import SelectionButtons from '../components/SelectionButtons';
-import DispenserArea from '../components/DispenserArea';
+import CardService from '@/services/CardService';
+import PurchaseService from '@/services/PurchaseService';
+import SlotService from '@/services/SlotService';
+import MachineService from '@/services/MachineService';
+import CardReader from '@/components/CardReader';
+import EmployeeVisor from '@/components/EmployeeVisor';
+import Slot from '@/components/Slot';
+import SelectionButtons from '@/components/SelectionButtons';
+import DispenserArea from '@/components/DispenserArea';
+import type { Card, Machine, MachineWithSlots, Slot as SlotType } from '@/types';
 
-const VendingMachine = () => {
-    const [selectedSlot, setSelectedSlot] = useState(null);
-    const [cardNumber, setCardNumber] = useState('');
-    const [isCardVerified, setIsCardVerified] = useState(false);
-    const [cardData, setCardData] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [machineData, setMachineData] = useState(null);
-    const [selectedMachine, setSelectedMachine] = useState(1);
-    const [machines, setMachines] = useState([]);
-    const [loadingMachine, setLoadingMachine] = useState(true);
+const VendingMachine: React.FC = () => {
+    const [selectedSlot, setSelectedSlot] = useState<SlotType | null>(null);
+    const [cardNumber, setCardNumber] = useState<string>('');
+    const [isCardVerified, setIsCardVerified] = useState<boolean>(false);
+    const [cardData, setCardData] = useState<Card | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [machineData, setMachineData] = useState<MachineWithSlots | null>(null);
+    const [selectedMachine, setSelectedMachine] = useState<number>(1);
+    const [machines, setMachines] = useState<Machine[]>([]);
+    const [loadingMachine, setLoadingMachine] = useState<boolean>(true);
 
     // Fetch available machines on component mount
     useEffect(() => {
@@ -42,7 +43,7 @@ const VendingMachine = () => {
         }
     }, [selectedMachine]);
 
-    const fetchMachineSlots = async (machineId) => {
+    const fetchMachineSlots = async (machineId: number) => {
         setLoadingMachine(true);
         const result = await SlotService.getMachineSlots(machineId);
 
@@ -75,7 +76,7 @@ const VendingMachine = () => {
         }
     };
 
-    const handleSlotClick = (slot) => {
+    const handleSlotClick = (slot: SlotType) => {
         if (!isCardVerified) {
             alert('Please verify your card first');
             return;
@@ -126,7 +127,7 @@ const VendingMachine = () => {
         setSelectedSlot(null);
     };
 
-    const handleMachineChange = (machineId) => {
+    const handleMachineChange = (machineId: string) => {
         setSelectedMachine(parseInt(machineId));
         setSelectedSlot(null);
     };

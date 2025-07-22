@@ -1,7 +1,12 @@
-import ErrorHandler from '../utils/errorHandler.js';
+import ErrorHandler from '@/utils/errorHandler';
+import type { Purchase, ServiceResult } from '@/types';
 
 class PurchaseService {
-    static async purchaseProduct(cardNumber, machineId, slotNumber) {
+    static async purchaseProduct(
+        cardNumber: string,
+        machineId: number,
+        slotNumber: string
+    ): Promise<ServiceResult<Purchase>> {
         try {
             const response = await fetch('/api/purchase', {
                 method: 'POST',
@@ -16,9 +21,9 @@ class PurchaseService {
                 }),
             });
 
-            return await ErrorHandler.handleResponse(response);
+            return await ErrorHandler.handleResponse<Purchase>(response);
         } catch (error) {
-            return ErrorHandler.handleError(error);
+            return ErrorHandler.handleError(error as Error);
         }
     }
 }
