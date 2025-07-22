@@ -50,7 +50,7 @@ class CardController extends Controller
     public function verifyCard(CardVerificationRequest $request, VerifyCardAction $action): JsonResponse
     {
         return $this->handleResponse(function () use ($request, $action) {
-            $result = $action->execute($request->validated());
+            $result = $action->execute($request->input('card_number'));
             return ['message' => 'Card verification successful', 'data' => new CardVerificationResource($result)];
         });
     }
