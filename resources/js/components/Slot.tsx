@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Slot as SlotType } from '@/types';
+import type { Slot as SlotType, Product } from '@/types';
 
 interface SlotProps {
     slot: SlotType;
@@ -11,18 +11,12 @@ const Slot: React.FC<SlotProps> = ({ slot, isSelected, onClick }) => {
     const hasProduct = slot.product !== null && slot.product !== undefined;
     const isOutOfStock = slot.quantity <= 0;
 
-    // Color mapping for different product types
-    const getProductColor = (product) => {
+    // Get product color from category or default
+    const getProductColor = (product: Product | null) => {
         if (!product) return '#374151';
-
-        const name = product.name.toLowerCase();
-        if (name.includes('pepsi')) return '#1e40af';
-        if (name.includes('coke') || name.includes('cola')) return '#dc2626';
-        if (name.includes('sprite')) return '#16a34a';
-        if (name.includes('fanta')) return '#ea580c';
-        if (name.includes('water')) return '#0284c7';
-        if (name.includes('juice')) return '#7c3aed';
-        return '#6b7280'; // Default gray
+        
+        console.log('Product color debug:', product.name, product.category_color);
+        return product.category_color || '#6b7280'; // Use category color or default gray
     };
 
     return (

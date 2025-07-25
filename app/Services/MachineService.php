@@ -7,9 +7,14 @@ use App\Exceptions\NotFoundException;
 
 class MachineService
 {
+    public function getAllMachines()
+    {
+        return Machine::with('slots.product.productCategory')->get();
+    }
+
     public function getMachineById(int $id): Machine
     {
-        $machine = Machine::with('slots.product')->find($id);
+        $machine = Machine::with('slots.product.productCategory')->find($id);
 
         if (!$machine) {
             throw new NotFoundException('Machine not found');

@@ -4,4 +4,5 @@ export interface Product {
   description?: string;
   price_points: number;
   quantity?: number;
+  category_color?: string;
 }

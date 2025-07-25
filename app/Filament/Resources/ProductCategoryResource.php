@@ -29,6 +29,10 @@ class ProductCategoryResource extends Resource
                     ->label('Nome da Categoria')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\ColorPicker::make('color')
+                    ->label('Cor da Categoria')
+                    ->required()
+                    ->default('#6b7280'),
             ]);
     }
 
@@ -39,6 +43,8 @@ class ProductCategoryResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nome da Categoria')
                     ->searchable(),
+                Tables\Columns\ColorColumn::make('color')
+                    ->label('Cor'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
                     ->dateTime()

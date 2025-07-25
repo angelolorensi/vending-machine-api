@@ -27,6 +27,7 @@ class MachineResource extends JsonResource
                             'name' => $slot->product->name,
                             'description' => $slot->product->description,
                             'price_points' => $slot->product->price_points,
+                            'category_color' => $slot->product->productCategory?->color ?? '#6b7280',
                         ] : null,
                     ];
                 });

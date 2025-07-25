@@ -14,7 +14,8 @@ class ProductCategory extends Model
     protected $primaryKey = 'product_category_id';
 
     protected $fillable = [
-        'name'
+        'name',
+        'color'
     ];
 
     public function products(): HasMany

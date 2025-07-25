@@ -32,7 +32,8 @@ class MachineController extends Controller
     public function show(int $id): JsonResponse
     {
         return $this->handleResponse(function () use ($id) {
-            return $this->machineService->getMachineById($id);
+            $machine = $this->machineService->getMachineById($id);
+            return new MachineResource($machine);
         });
     }
 
