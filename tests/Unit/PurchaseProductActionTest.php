@@ -4,7 +4,11 @@ namespace Tests\Unit;
 
 use App\Actions\PurchaseProductAction;
 use App\Services\CardService;
+use App\Services\ClassificationService;
+use App\Services\EmployeeService;
 use App\Services\MachineService;
+use App\Services\ProductCategoryService;
+use App\Services\ProductService;
 use App\Services\SlotService;
 use App\Services\TransactionService;
 use App\Models\Card;
@@ -33,15 +37,25 @@ class PurchaseProductActionTest extends TestCase
 
     private PurchaseProductAction $purchaseProductAction;
     private CardService $cardService;
+    private ClassificationService $classificationService;
+    private EmployeeService $employeeService;
     private MachineService $machineService;
+    private ProductCategoryService $productCategoryService;
+    private ProductService $productService;
     private SlotService $slotService;
     private TransactionService $transactionService;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Initialize services using app container
         $this->cardService = new CardService();
+        $this->classificationService = new ClassificationService();
+        $this->employeeService = new EmployeeService();
         $this->machineService = new MachineService();
+        $this->productCategoryService = new ProductCategoryService();
+        $this->productService = new ProductService();
         $this->slotService = new SlotService();
         $this->transactionService = new TransactionService();
 
@@ -53,37 +67,81 @@ class PurchaseProductActionTest extends TestCase
         );
     }
 
+    private function createTestData(array $overrides = []): array
+    {
+        $defaults = [
+            'classification' => [
+                'name' => 'Standard Employee',
+                'daily_juice_limit' => 5,
+                'daily_point_limit' => 100,
+                'daily_snack_limit' => 5,
+                'daily_meal_limit' => 5,
+                'daily_point_recharge_amount' => 50
+            ],
+            'card' => [
+                'card_number' => 'TEST123',
+                'points_balance' => 50,
+                'status' => CardStatus::ACTIVE
+            ],
+            'employee' => [
+                'name' => 'Test Employee',
+                'employee_number' => 'EMP001',
+                'status' => EmployeeStatus::ACTIVE
+            ],
+            'machine' => [
+                'name' => 'Test Machine',
+                'location' => 'Test Location',
+                'status' => MachineStatus::ACTIVE
+            ],
+            'category' => [
+                'name' => 'Beverages',
+                'color' => '#ff0000'
+            ],
+            'product' => [
+                'name' => 'Coca Cola',
+                'description' => 'Classic cola drink',
+                'price_points' => 10
+            ],
+            'slot' => [
+                'quantity' => 5,
+                'number' => 5
+            ]
+        ];
+
+        $data = array_replace_recursive($defaults, $overrides);
+
+        $classification = $this->classificationService->createClassification($data['classification']);
+        $card = $this->cardService->createCard($data['card']);
+
+        $employeeData = array_merge($data['employee'], [
+            'classification_id' => $classification->classification_id,
+            'card_id' => $card->card_id
+        ]);
+        $employee = $this->employeeService->createEmployee($employeeData);
+
+        $machine = $this->machineService->createMachine($data['machine']);
+        $category = $this->productCategoryService->createProductCategory($data['category']);
+
+        $productData = array_merge($data['product'], [
+            'product_category_id' => $category->product_category_id
+        ]);
+        $product = $this->productService->createProduct($productData);
+
+        // Update machine's slot to have this product
+        $slot = $machine->slots()->where('number', $data['slot']['number'])->first();
+        $slotData = array_merge($data['slot'], [
+            'product_id' => $product->product_id
+        ]);
+        $slot = $this->slotService->updateSlot($slot->slot_id, $slotData);
+
+        return compact('classification', 'card', 'employee', 'machine', 'category', 'product', 'slot');
+    }
+
     public function test_can_successfully_purchase_product()
     {
         // Arrange
-        $classification = Classification::factory()->create([
-            'daily_juice_limit' => 5,
-            'daily_point_limit' => 100
-        ]);
-        $card = Card::factory()->create([
-            'card_number' => 'TEST123',
-            'points_balance' => 50,
-            'status' => CardStatus::ACTIVE
-        ]);
-        $employee = Employee::factory()->create([
-            'classification_id' => $classification->classification_id,
-            'card_id' => $card->card_id,
-            'status' => EmployeeStatus::ACTIVE
-        ]);
-        $machine = Machine::factory()->create([
-            'status' => MachineStatus::ACTIVE
-        ]);
-        $category = ProductCategory::factory()->create(['name' => 'beverages']);
-        $product = Product::factory()->create([
-            'name' => 'Coca Cola',
-            'price_points' => 10,
-            'product_category_id' => $category->product_category_id
-        ]);
-        $slot = Slot::factory()->create([
-            'machine_id' => $machine->machine_id,
-            'product_id' => $product->product_id,
-            'number' => 5
-        ]);
+        $testData = $this->createTestData();
+        extract($testData);
 
         // Act
         $result = $this->purchaseProductAction->execute('TEST123', $machine->machine_id, 5);
@@ -106,7 +164,7 @@ class PurchaseProductActionTest extends TestCase
             'slot_id' => $slot->slot_id,
             'product_id' => $product->product_id,
             'points_deducted' => 10,
-            'status' => TransactionStatus::COMPLETED->value
+            'status' => TransactionStatus::COMPLETED
         ]);
 
         // Verify card balance was updated
@@ -119,7 +177,8 @@ class PurchaseProductActionTest extends TestCase
     public function test_throws_exception_when_card_not_found()
     {
         // Arrange
-        $machine = Machine::factory()->create();
+        $testData = $this->createTestData();
+        $machine = $testData['machine'];
 
         // Assert
         $this->expectException(NotFoundException::class);
@@ -132,11 +191,10 @@ class PurchaseProductActionTest extends TestCase
     public function test_throws_exception_when_card_is_not_active()
     {
         // Arrange
-        $card = Card::factory()->create([
-            'card_number' => 'INACTIVE123',
-            'status' => CardStatus::INACTIVE
+        $testData = $this->createTestData([
+            'card' => ['card_number' => 'INACTIVE123', 'status' => CardStatus::INACTIVE]
         ]);
-        $machine = Machine::factory()->create();
+        $machine = $testData['machine'];
 
         // Assert
         $this->expectException(NotActiveException::class);
@@ -149,17 +207,10 @@ class PurchaseProductActionTest extends TestCase
     public function test_throws_exception_when_employee_is_not_active()
     {
         // Arrange
-        $classification = Classification::factory()->create();
-        $card = Card::factory()->create([
-            'card_number' => 'TEST123',
-            'status' => CardStatus::ACTIVE
+        $testData = $this->createTestData([
+            'employee' => ['status' => EmployeeStatus::INACTIVE]
         ]);
-        $employee = Employee::factory()->create([
-            'classification_id' => $classification->classification_id,
-            'card_id' => $card->card_id,
-            'status' => EmployeeStatus::INACTIVE
-        ]);
-        $machine = Machine::factory()->create();
+        $machine = $testData['machine'];
 
         // Assert
         $this->expectException(NotActiveException::class);
@@ -172,12 +223,15 @@ class PurchaseProductActionTest extends TestCase
     public function test_throws_exception_when_machine_not_found()
     {
         // Arrange
-        $classification = Classification::factory()->create();
-        $card = Card::factory()->create([
+        $classification = $this->classificationService->createClassification(['name' => 'Test Classification', 'daily_juice_limit' => 5, 'daily_point_limit' => 100, 'daily_snack_limit' => 5, 'daily_meal_limit' => 5, 'daily_point_recharge_amount' => 50]);
+        $card = $this->cardService->createCard([
             'card_number' => 'TEST123',
-            'status' => CardStatus::ACTIVE
+            'status' => CardStatus::ACTIVE,
+            'points_balance' => 50
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
@@ -194,17 +248,22 @@ class PurchaseProductActionTest extends TestCase
     public function test_throws_exception_when_machine_is_not_active()
     {
         // Arrange
-        $classification = Classification::factory()->create();
-        $card = Card::factory()->create([
+        $classification = $this->classificationService->createClassification(['name' => 'Test Classification', 'daily_juice_limit' => 5, 'daily_point_limit' => 100, 'daily_snack_limit' => 5, 'daily_meal_limit' => 5, 'daily_point_recharge_amount' => 50]);
+        $card = $this->cardService->createCard([
             'card_number' => 'TEST123',
-            'status' => CardStatus::ACTIVE
+            'status' => CardStatus::ACTIVE,
+            'points_balance' => 50
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::INACTIVE
         ]);
 
@@ -219,17 +278,22 @@ class PurchaseProductActionTest extends TestCase
     public function test_throws_exception_when_slot_not_found()
     {
         // Arrange
-        $classification = Classification::factory()->create();
-        $card = Card::factory()->create([
+        $classification = $this->classificationService->createClassification(['name' => 'Test Classification', 'daily_juice_limit' => 5, 'daily_point_limit' => 100, 'daily_snack_limit' => 5, 'daily_meal_limit' => 5, 'daily_point_recharge_amount' => 50]);
+        $card = $this->cardService->createCard([
             'card_number' => 'TEST123',
-            'status' => CardStatus::ACTIVE
+            'status' => CardStatus::ACTIVE,
+            'points_balance' => 50
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::ACTIVE
         ]);
 
@@ -244,23 +308,28 @@ class PurchaseProductActionTest extends TestCase
     public function test_throws_exception_when_slot_has_no_product()
     {
         // Arrange
-        $classification = Classification::factory()->create();
-        $card = Card::factory()->create([
+        $classification = $this->classificationService->createClassification(['name' => 'Test Classification', 'daily_juice_limit' => 5, 'daily_point_limit' => 100, 'daily_snack_limit' => 5, 'daily_meal_limit' => 5, 'daily_point_recharge_amount' => 50]);
+        $card = $this->cardService->createCard([
             'card_number' => 'TEST123',
-            'status' => CardStatus::ACTIVE
+            'status' => CardStatus::ACTIVE,
+            'points_balance' => 50
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::ACTIVE
         ]);
-        $slot = Slot::factory()->create([
-            'machine_id' => $machine->machine_id,
+        $slot = $machine->slots()->where('number', 5)->first();
+        $slot = $this->slotService->updateSlot($slot->slot_id, [
             'product_id' => null,
-            'number' => 5
+            'quantity' => 0
         ]);
 
         // Assert
@@ -274,18 +343,22 @@ class PurchaseProductActionTest extends TestCase
     public function test_throws_exception_when_insufficient_points()
     {
         // Arrange
-        $classification = Classification::factory()->create();
-        $card = Card::factory()->create([
+        $classification = $this->classificationService->createClassification(['name' => 'Test Classification', 'daily_juice_limit' => 5, 'daily_point_limit' => 100, 'daily_snack_limit' => 5, 'daily_meal_limit' => 5, 'daily_point_recharge_amount' => 50]);
+        $card = $this->cardService->createCard([
             'card_number' => 'TEST123',
             'points_balance' => 5,
             'status' => CardStatus::ACTIVE
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::ACTIVE
         ]);
         $category = ProductCategory::factory()->create();
@@ -293,10 +366,10 @@ class PurchaseProductActionTest extends TestCase
             'price_points' => 20,
             'product_category_id' => $category->product_category_id
         ]);
-        $slot = Slot::factory()->create([
-            'machine_id' => $machine->machine_id,
+        $slot = $machine->slots()->where('number', 5)->first();
+        $slot = $this->slotService->updateSlot($slot->slot_id, [
             'product_id' => $product->product_id,
-            'number' => 5
+            'quantity' => 5
         ]);
 
         // Assert
@@ -319,36 +392,46 @@ class PurchaseProductActionTest extends TestCase
             'points_balance' => 50,
             'status' => CardStatus::ACTIVE
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::ACTIVE
         ]);
-        $category = ProductCategory::factory()->create(['name' => 'beverages']);
-        $product = Product::factory()->create([
+        $category = $this->productCategoryService->createProductCategory(['name' => 'Beverages', 'color' => '#ff0000']);
+        $product = $this->productService->createProduct([
+            'name' => 'Test Product',
+            'description' => 'Test product description',
             'price_points' => 10,
             'product_category_id' => $category->product_category_id
         ]);
-        $slot = Slot::factory()->create([
-            'machine_id' => $machine->machine_id,
+        $slot = $machine->slots()->where('number', 5)->first();
+        $slot = $this->slotService->updateSlot($slot->slot_id, [
             'product_id' => $product->product_id,
-            'number' => 5
+            'quantity' => 5
         ]);
 
         // Create existing transaction for today
-        Transaction::factory()->create([
+        Transaction::create([
             'employee_id' => $employee->employee_id,
+            'card_id' => $card->card_id,
+            'machine_id' => $machine->machine_id,
+            'slot_id' => $slot->slot_id,
             'product_id' => $product->product_id,
+            'points_deducted' => 10,
             'transaction_time' => Carbon::today(),
-            'status' => TransactionStatus::COMPLETED->value
+            'status' => TransactionStatus::COMPLETED
         ]);
 
         // Assert
         $this->expectException(DailyLimitExceededException::class);
-        $this->expectExceptionMessage('Daily juice limit exceeded');
+        $this->expectExceptionMessage('Daily beverage limit exceeded');
 
         // Act
         $this->purchaseProductAction->execute('TEST123', $machine->machine_id, 5);
@@ -366,23 +449,29 @@ class PurchaseProductActionTest extends TestCase
             'points_balance' => 50,
             'status' => CardStatus::ACTIVE
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::ACTIVE
         ]);
-        $category = ProductCategory::factory()->create(['name' => 'beverages']);
-        $product = Product::factory()->create([
+        $category = $this->productCategoryService->createProductCategory(['name' => 'Beverages', 'color' => '#ff0000']);
+        $product = $this->productService->createProduct([
+            'name' => 'Test Product',
+            'description' => 'Test product description',
             'price_points' => 10,
             'product_category_id' => $category->product_category_id
         ]);
-        $slot = Slot::factory()->create([
-            'machine_id' => $machine->machine_id,
+        $slot = $machine->slots()->where('number', 5)->first();
+        $slot = $this->slotService->updateSlot($slot->slot_id, [
             'product_id' => $product->product_id,
-            'number' => 5
+            'quantity' => 5
         ]);
 
         // Create existing transaction that uses 10 points
@@ -390,7 +479,7 @@ class PurchaseProductActionTest extends TestCase
             'employee_id' => $employee->employee_id,
             'points_deducted' => 10,
             'transaction_time' => Carbon::today(),
-            'status' => TransactionStatus::COMPLETED->value
+            'status' => TransactionStatus::COMPLETED
         ]);
 
         // Assert
@@ -413,31 +502,41 @@ class PurchaseProductActionTest extends TestCase
             'points_balance' => 50,
             'status' => CardStatus::ACTIVE
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::ACTIVE
         ]);
         $category = ProductCategory::factory()->create(['name' => 'snacks']);
-        $product = Product::factory()->create([
+        $product = $this->productService->createProduct([
+            'name' => 'Test Product',
+            'description' => 'Test product description',
             'price_points' => 10,
             'product_category_id' => $category->product_category_id
         ]);
-        $slot = Slot::factory()->create([
-            'machine_id' => $machine->machine_id,
+        $slot = $machine->slots()->where('number', 5)->first();
+        $slot = $this->slotService->updateSlot($slot->slot_id, [
             'product_id' => $product->product_id,
-            'number' => 5
+            'quantity' => 5
         ]);
 
         // Create existing snack transaction for today
-        Transaction::factory()->create([
+        Transaction::create([
             'employee_id' => $employee->employee_id,
+            'card_id' => $card->card_id,
+            'machine_id' => $machine->machine_id,
+            'slot_id' => $slot->slot_id,
             'product_id' => $product->product_id,
+            'points_deducted' => 10,
             'transaction_time' => Carbon::today(),
-            'status' => TransactionStatus::COMPLETED->value
+            'status' => TransactionStatus::COMPLETED
         ]);
 
         // Assert
@@ -460,31 +559,41 @@ class PurchaseProductActionTest extends TestCase
             'points_balance' => 50,
             'status' => CardStatus::ACTIVE
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::ACTIVE
         ]);
         $category = ProductCategory::factory()->create(['name' => 'meals']);
-        $product = Product::factory()->create([
+        $product = $this->productService->createProduct([
+            'name' => 'Test Product',
+            'description' => 'Test product description',
             'price_points' => 10,
             'product_category_id' => $category->product_category_id
         ]);
-        $slot = Slot::factory()->create([
-            'machine_id' => $machine->machine_id,
+        $slot = $machine->slots()->where('number', 5)->first();
+        $slot = $this->slotService->updateSlot($slot->slot_id, [
             'product_id' => $product->product_id,
-            'number' => 5
+            'quantity' => 5
         ]);
 
         // Create existing meal transaction for today
-        Transaction::factory()->create([
+        Transaction::create([
             'employee_id' => $employee->employee_id,
+            'card_id' => $card->card_id,
+            'machine_id' => $machine->machine_id,
+            'slot_id' => $slot->slot_id,
             'product_id' => $product->product_id,
+            'points_deducted' => 10,
             'transaction_time' => Carbon::today(),
-            'status' => TransactionStatus::COMPLETED->value
+            'status' => TransactionStatus::COMPLETED
         ]);
 
         // Assert
@@ -507,24 +616,28 @@ class PurchaseProductActionTest extends TestCase
             'points_balance' => 10,
             'status' => CardStatus::ACTIVE
         ]);
-        $employee = Employee::factory()->create([
+        $employee = $this->employeeService->createEmployee([
+            'name' => 'Test Employee',
+            'employee_number' => 'EMP001',
             'classification_id' => $classification->classification_id,
             'card_id' => $card->card_id,
             'status' => EmployeeStatus::ACTIVE
         ]);
-        $machine = Machine::factory()->create([
+        $machine = $this->machineService->createMachine([
+            'name' => 'Test Machine',
+            'location' => 'Test Location',
             'status' => MachineStatus::ACTIVE
         ]);
-        $category = ProductCategory::factory()->create(['name' => 'beverages']);
+        $category = $this->productCategoryService->createProductCategory(['name' => 'Beverages', 'color' => '#ff0000']);
         $product = Product::factory()->create([
             'name' => 'Water',
             'price_points' => 10,
             'product_category_id' => $category->product_category_id
         ]);
-        $slot = Slot::factory()->create([
-            'machine_id' => $machine->machine_id,
+        $slot = $machine->slots()->where('number', 1)->first();
+        $slot = $this->slotService->updateSlot($slot->slot_id, [
             'product_id' => $product->product_id,
-            'number' => 1
+            'quantity' => 5
         ]);
 
         // Act

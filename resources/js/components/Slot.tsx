@@ -14,8 +14,6 @@ const Slot: React.FC<SlotProps> = ({ slot, isSelected, onClick }) => {
     // Get product color from category or default
     const getProductColor = (product: Product | null) => {
         if (!product) return '#374151';
-        
-        console.log('Product color debug:', product.name, product.category_color);
         return product.category_color || '#6b7280'; // Use category color or default gray
     };
 

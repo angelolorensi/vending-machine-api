@@ -4,9 +4,15 @@ namespace App\Services;
 
 use App\Models\Product;
 use App\Exceptions\NotFoundException;
+use Illuminate\Support\Collection;
 
 class ProductService
 {
+    public function getAllProducts(): Collection
+    {
+        return Product::with(['productCategory', 'slots'])->get();
+    }
+
     public function getProductById(int $id): Product
     {
         $product = Product::with(['productCategory', 'slots'])->find($id);

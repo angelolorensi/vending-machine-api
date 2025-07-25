@@ -4,10 +4,11 @@ namespace App\Services;
 
 use App\Models\Machine;
 use App\Exceptions\NotFoundException;
+use Illuminate\Support\Collection;
 
 class MachineService
 {
-    public function getAllMachines()
+    public function getAllMachines(): Collection
     {
         return Machine::with('slots.product.productCategory')->get();
     }
