@@ -40,7 +40,6 @@ const MachineSlots = ({
                             key={slot.slot_id || slot.number}
                             slot={slot}
                             isSelected={selectedSlot?.number === slot.number}
-                            isDisabled={isLoading}
                             onClick={handleSlotClick}
                         />
                     ))}

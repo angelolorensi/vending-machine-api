@@ -1,11 +1,19 @@
 import React from 'react';
+import type { Slot } from '@/types';
 
-const ProductDisplay = ({
+interface ProductDisplayProps {
+    selectedSlot: Slot | null;
+    isCardVerified: boolean;
+    isLoading: boolean;
+    onPurchase: () => void;
+}
+
+const ProductDisplay: React.FC<ProductDisplayProps> = ({
                             selectedSlot,
                             isCardVerified,
                             isLoading,
                             onPurchase
-                        }) => {
+                        }: ProductDisplayProps) => {
     if (!selectedSlot || !selectedSlot.product) {
         return (
             <div className="bg-gray-100 p-4 rounded-lg mb-4 text-center text-gray-500">

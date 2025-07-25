@@ -55,7 +55,7 @@ const Slot: React.FC<SlotProps> = ({ slot, isSelected, onClick }) => {
                         <div className="text-xs font-bold text-center leading-tight p-1 text-white drop-shadow-lg">
                             {slot.product.name}
                         </div>
-                        
+
                         {/* Price and quantity at bottom */}
                         <div className="flex flex-col gap-1">
                             <div className="text-xs px-2 py-1 text-center text-white drop-shadow-lg">

@@ -144,7 +144,7 @@ const VendingMachine: React.FC = () => {
     const slots = machineData?.slots || [];
 
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="m-3 max-w-5xl mx-auto">
             {/* Machine Selector */}
             {machines.length > 1 && (
                 <div className="mb-4 text-center">

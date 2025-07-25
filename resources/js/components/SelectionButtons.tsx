@@ -10,13 +10,13 @@ interface SelectionButtonsProps {
     onSlotSelect: (slot: SlotType) => void;
 }
 
-const SelectionButtons: React.FC<SelectionButtonsProps> = ({ 
-    selectedSlot, 
-    onPurchase, 
-    isLoading, 
-    isCardVerified, 
-    slots, 
-    onSlotSelect 
+const SelectionButtons: React.FC<SelectionButtonsProps> = ({
+    selectedSlot,
+    onPurchase,
+    isLoading,
+    isCardVerified,
+    slots,
+    onSlotSelect
 }) => {
     const buttonRows = ['A', 'B', 'C', 'D', 'E'];
     const buttonCols = [1, 2, 3, 4, 5, 6];
@@ -39,7 +39,7 @@ const SelectionButtons: React.FC<SelectionButtonsProps> = ({
                         const slot = slots.find(s => `${s.row}${s.col}` === slotCode);
                         const hasAvailableProduct = slot && slot.product && slot.quantity > 0;
                         const isSelectedButton = selectedSlot && `${selectedSlot.row}${selectedSlot.col}` === slotCode;
-                        
+
                         return (
                             <button
                                 key={slotCode}
@@ -47,8 +47,8 @@ const SelectionButtons: React.FC<SelectionButtonsProps> = ({
                                 disabled={!hasAvailableProduct}
                                 className={`
                                     text-xs font-mono py-1 px-1 rounded transition-colors border
-                                    ${hasAvailableProduct 
-                                        ? 'bg-black border-gray-600 text-white hover:bg-gray-900 hover:border-yellow-400' 
+                                    ${hasAvailableProduct
+                                        ? 'bg-black border-gray-600 text-white hover:bg-gray-900 hover:border-yellow-400'
                                         : 'bg-gray-700 border-gray-700 text-gray-500 cursor-not-allowed'
                                     }
                                     ${isSelectedButton ? 'bg-yellow-600 border-yellow-400 text-black' : ''}
