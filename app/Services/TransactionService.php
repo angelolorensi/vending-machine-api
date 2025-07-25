@@ -9,6 +9,17 @@ use Illuminate\Support\Collection;
 
 class TransactionService
 {
+    public function getAllTransactions(): Collection
+    {
+        return Transaction::with([
+            'employee',
+            'card',
+            'machine',
+            'slot',
+            'product.productCategory'
+        ])->orderBy('transaction_time', 'desc')->get();
+    }
+
     public function getTransactionById(int $id): Transaction
     {
         $transaction = Transaction::with(['employee', 'card', 'machine', 'slot', 'product'])->find($id);

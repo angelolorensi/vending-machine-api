@@ -8,3 +8,4 @@ require __DIR__ . '/api/products.php';
 require __DIR__ . '/api/employees.php';
 require __DIR__ . '/api/cards.php';
 require __DIR__ . '/api/purchase.php';
+require __DIR__ . '/api/transactions.php';
