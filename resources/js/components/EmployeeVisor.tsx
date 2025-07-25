@@ -7,15 +7,14 @@ interface EmployeeVisorProps {
 }
 
 const EmployeeVisor: React.FC<EmployeeVisorProps> = ({ cardData, isCardVerified }) => {
-    const employeeData = (cardData as any)?.data || cardData;
     return (
         <div className="bg-black p-3 m-4 rounded border border-gray-600">
             <div className="text-green-400 font-mono text-sm">
-                {isCardVerified && employeeData ? (
+                {isCardVerified && cardData ? (
                     <div className="space-y-1">
-                        <div>EMPLOYEE: {employeeData.employee_name}</div>
-                        <div>BALANCE: {employeeData.points_balance} POINTS</div>
-                        <div className="text-yellow-400">LIMIT: {employeeData.daily_point_limit} PTS</div>
+                        <div>EMPLOYEE: {cardData.employee_name}</div>
+                        <div>BALANCE: {cardData.points_balance} POINTS</div>
+                        <div className="text-yellow-400">LIMIT: {cardData.daily_point_limit} PTS</div>
                     </div>
                 ) : (
                     <div className="text-gray-500">

@@ -1,6 +1,6 @@
 // Base API Response structure
 export interface ApiResponse<T = any> {
-  success: boolean;
+  success: true;
   data: T;
   message?: string;
 }

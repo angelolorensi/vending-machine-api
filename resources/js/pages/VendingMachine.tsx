@@ -8,7 +8,7 @@ import EmployeeVisor from '@/components/EmployeeVisor';
 import Slot from '@/components/Slot';
 import SelectionButtons from '@/components/SelectionButtons';
 import DispenserArea from '@/components/DispenserArea';
-import type { Card, Machine, MachineWithSlots, Slot as SlotType } from '@/types';
+import type {Card, Machine, MachineWithSlots, ServiceResult, Slot as SlotType} from '@/types';
 
 const VendingMachine: React.FC = () => {
     const [selectedSlot, setSelectedSlot] = useState<SlotType | null>(null);
@@ -64,7 +64,6 @@ const VendingMachine: React.FC = () => {
         setIsLoading(true);
         try {
             const result = await CardService.verifyCard(cardNumber);
-
             if (result.success) {
                 setCardData(result.data);
                 setIsCardVerified(true);

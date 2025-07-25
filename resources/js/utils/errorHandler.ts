@@ -33,11 +33,7 @@ class ErrorHandler {
             return this.handleError(null, responseData);
         }
 
-        return {
-            success: true,
-            data: responseData.data,
-            message: responseData.message
-        };
+        return responseData;
     }
 }
 

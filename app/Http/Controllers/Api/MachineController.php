@@ -33,7 +33,7 @@ class MachineController extends Controller
     {
         return $this->handleResponse(function () use ($id) {
             $machine = $this->machineService->getMachineById($id);
-            return new MachineResource($machine);
+            return ['data' => new MachineResource($machine)];
         });
     }
 

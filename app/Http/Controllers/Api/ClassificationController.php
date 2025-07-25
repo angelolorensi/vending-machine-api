@@ -33,7 +33,7 @@ class ClassificationController extends Controller
     {
         return $this->handleResponse(function () use ($id) {
             $classification = $this->classificationService->getClassificationById($id);
-            return new ClassificationResource($classification);
+            return ['data' => new ClassificationResource($classification)];
         });
     }
 

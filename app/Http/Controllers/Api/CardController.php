@@ -27,7 +27,7 @@ class CardController extends Controller
     {
         return $this->handleResponse(function () use ($id) {
             $card = $this->cardService->getCardById($id);
-            return new CardResource($card);
+            return ['data' => new CardResource($card)];
         });
     }
 

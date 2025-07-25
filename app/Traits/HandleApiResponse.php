@@ -14,7 +14,8 @@ trait HandleApiResponse
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'message' => $result['message'] ?? 'Operation successful',
+                'data' => $result['data'],
             ]);
         } catch (Throwable $e) {
             $errorResponse = [

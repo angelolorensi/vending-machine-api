@@ -33,7 +33,7 @@ class EmployeeController extends Controller
     {
         return $this->handleResponse(function () use ($id) {
             $employee = $this->employeeService->getEmployeeById($id);
-            return new EmployeeResource($employee);
+            return ['data' => new EmployeeResource($employee)];
         });
     }
 

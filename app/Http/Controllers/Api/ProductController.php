@@ -33,7 +33,7 @@ class ProductController extends Controller
     {
         return $this->handleResponse(function () use ($id) {
             $product = $this->productService->getProductById($id);
-            return new ProductResource($product);
+            return ['data' => new ProductResource($product)];
         });
     }
 
