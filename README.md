@@ -1,61 +1,229 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Máquinas de Venda Automatizadas
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Um sistema completo de máquinas de venda com controle de cartões de funcionários, desenvolvido para ambientes corporativos. O projeto integra backend Laravel, frontend React/TypeScript e painel administrativo Filament.
 
-## About Laravel
+## Funcionalidades
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Sistema de Cartões e Pontos
+- **Cartões de funcionários** com recarga automática diária
+- **Controle de limites** por categoria de produto (bebidas, lanches, refeições)
+- **Histórico completo** de transações
+- **Verificação de saldo** em tempo real
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Gerenciamento de Máquinas
+- **Múltiplas máquinas** por localização
+- **Sistema de slots** com numeração única
+- **Gestão automática** de estoque
+- **Produtos categorizados** com cores visuais
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Interface do Usuário
+- **Simulação realística** da máquina de venda
+- **Visor de funcionário** com informações do cartão
+- **Seleção intuitiva** de produtos
+- **Feedback visual** de status e erros
 
-## Learning Laravel
+### Dashboard Administrativo
+- **Painel Filament** com CRUD completo
+- **Dashboard analytics** com widgets personalizados
+- **Relatórios em tempo real** de transações
+- **Gráficos interativos** por categoria e período
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Stack Tecnológica
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Backend
+- **Laravel 10** com arquitetura de serviços
+- **PostgreSQL** com relacionamentos complexos
+- **API REST** com documentação completa
+- **PHPUnit** para testes unitários
+- **Filament PHP** para painel administrativo
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Frontend
+- **React 18** com TypeScript
+- **Tailwind CSS** para estilização
+- **Componentização modular**
+- **Estados globais** para gerenciamento de dados
 
-## Laravel Sponsors
+### DevOps
+- **Docker** com Laravel Sail
+- **Git** com controle de versão
+- **Seeders** para dados de teste
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Pré-requisitos
 
-### Premium Partners
+- Docker (com Docker Compose plugin)
+- Node.js 18+
+- Composer 2+ (opcional, usado via Docker)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Instalação e Configuração
 
-## Contributing
+### Início Rápido (Recomendado)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Para desenvolvedores que querem começar rapidamente:
 
-## Code of Conduct
+```bash
+git clone <repository-url>
+cd vending-machine-api
+./dev.sh
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+O script `dev.sh` automaticamente:
+- Verifica todas as dependências (Docker, Node.js)
+- Cria o arquivo `.env` se não existir
+- Instala dependências do Composer e NPM
+- Inicia os containers Docker
+- Executa migrations e seeders
+- Inicia o Vite para desenvolvimento
+- Exibe URLs e informações úteis
 
-## Security Vulnerabilities
+### Instalação Manual
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Se preferir fazer passo a passo:
 
-## License
+#### 1. Clone o repositório
+```bash
+git clone <repository-url>
+cd vending-machine-api
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### 2. Configure o ambiente
+```bash
+cp .env.example .env
+```
+
+#### 3. Instale as dependências
+```bash
+# Backend
+composer install
+
+# Frontend
+npm install
+```
+
+#### 4. Inicie os containers
+```bash
+./vendor/bin/sail up -d
+```
+
+#### 5. Configure o banco de dados
+```bash
+# Execute as migrations
+./vendor/bin/sail php artisan migrate
+
+# Popule com dados de teste
+./vendor/bin/sail php artisan db:seed
+```
+
+#### 6. Compile os assets do frontend
+```bash
+# Desenvolvimento
+npm run dev
+
+# Produção
+npm run build
+```
+
+#### 7. Crie um usuário administrador
+```bash
+./vendor/bin/sail php artisan make:filament-user
+```
+
+### Scripts NPM Disponíveis
+
+```bash
+# Configuração inicial completa
+npm run setup
+
+# Iniciar desenvolvimento (backend + frontend)
+npm run start
+
+# Parar todos os serviços
+npm run stop
+
+# Apenas frontend (com backend já rodando)
+npm run dev
+
+# Build de produção
+npm run build
+```
+
+## Como Usar
+
+### Interface da Máquina de Venda
+1. Acesse `http://localhost` 
+2. Insira um número de cartão (ex: `CARD001`)
+3. Verifique o cartão para ver saldo e limites
+4. Selecione um produto usando os botões numéricos
+5. Confirme a compra
+
+### Painel Administrativo
+1. Acesse `http://localhost/admin`
+2. Faça login com suas credenciais
+3. Gerencie máquinas, produtos, funcionários e cartões
+4. Visualize o dashboard de transações
+
+## Testes
+
+Execute a suíte de testes completa:
+
+```bash
+# Todos os testes
+./vendor/bin/sail php artisan test
+
+# Testes específicos
+./vendor/bin/sail php artisan test tests/Unit/PurchaseProductActionTest.php
+
+# Com cobertura
+./vendor/bin/sail php artisan test --coverage
+```
+
+## Estrutura do Projeto
+
+```
+app/
+├── Actions/          # Lógica de negócio complexa
+├── Services/         # Acesso a dados e operações
+├── Http/
+│   ├── Controllers/  # Controllers da API
+│   ├── Resources/    # Transformação de dados
+│   └── Requests/     # Validação de entrada
+├── Models/           # Modelos Eloquent
+├── Filament/         # Painel administrativo
+└── Exceptions/       # Exceptions customizadas
+
+resources/
+├── js/
+│   ├── components/   # Componentes React
+│   ├── pages/        # Páginas principais
+│   ├── services/     # Serviços do frontend
+│   └── types/        # Definições TypeScript
+└── views/            # Views Blade
+
+tests/
+├── Unit/             # Testes unitários
+└── Feature/          # Testes de integração
+```
+
+## API Endpoints
+
+### Autenticação e Cartões
+- `POST /api/cards/verify` - Verificar cartão
+- `GET /api/cards/{id}` - Obter detalhes do cartão
+
+### Máquinas e Produtos  
+- `GET /api/machines` - Listar máquinas
+- `GET /api/machines/{id}?with=slots` - Detalhes da máquina com slots
+
+### Transações
+- `POST /api/purchase` - Realizar compra
+- `GET /api/transactions` - Listar transações
+- `GET /api/transactions/{id}` - Detalhes da transação
+
+## Comandos Artisan Personalizados
+
+```bash
+# Recarregar pontos diários de todos os cartões
+./vendor/bin/sail php artisan cards:daily-recharge
+
+# Preencher slots vazios automaticamente
+./vendor/bin/sail php artisan slots:fill
+```
