@@ -4,7 +4,10 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "start": "concurrently \"./vendor/bin/sail up -d && sleep 10\" \"npm run dev\"",
+        "setup": "npm install && ./vendor/bin/sail up -d && sleep 10 && ./vendor/bin/sail php artisan migrate && ./vendor/bin/sail php artisan db:seed",
+        "stop": "./vendor/bin/sail down"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
